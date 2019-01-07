@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AzureFunctionsVersion>v2</AzureFunctionsVersion>
+    <RestorePackagesPath>$(SolutionDir)\packages\</RestorePackagesPath>
+  </PropertyGroup>
+  <Import Project="$(RestorePackagesPath)msbuildtasks\*\tools\MSBuild.Community.Tasks.Targets" />
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="echo $(OutDir)" />
+    <Exec Command="echo $(SolutionDir)" />
+    <Exec Command="echo $(MSBuildToolsPath)" />
+    <Exec Command="echo $(MSBuildExtensionsPath)" />
+  </Target>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.KeyVault" Version="2.3.2" />
+    <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.0.0" />
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.13" />
+    <PackageReference Include="MSBuildTasks" Version="1.5.0.235" />
+    <PackageReference Include="Npgsql" Version="3.2.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="host.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="local.settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FunctionDeploymentFiles Include="$(SolutionDir)PollPg\Alert.cs" />
+    <FunctionDeploymentFiles Include="$(SolutionDir)PollPg\host.json" />
+    <FunctionDeploymentFiles Include="$(SolutionDir)PollPg\local.settings.json" />
+    <FunctionDeploymentFiles Include="$(SolutionDir)PollPg\PollPg.csproj" />
+  </ItemGroup>
+  <Target Name="Zip" AfterTargets="Build">
+    <Zip Files="@(FunctionDeploymentFiles)" ZipFileName="$(SolutionDir)zip\Alert.zip" WorkingDirectory="$(SolutionDir)zip\" ZipLevel="9" />
+  </Target>
+</Project>
