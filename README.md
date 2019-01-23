@@ -49,10 +49,10 @@ deployment scenarios are supported, we may revisit this script to accommodate th
 
 ## What kind of conditions can I detect?
 It would help to understand the data collected by [Intelligent Performance feature](https://docs.microsoft.com/en-us/azure/postgresql/concepts-query-store) to figure out what you can alert on. However, you can take advantage of some of the few obvious cases in the
-correspoinding app setting of your Azure Function
+corresponding app setting of your Azure Function
 
 |Use Case|Your functions app settings|Value|
-|---|---|
+|---|---|---|
 |My network latency is more than x milliseconds|SENDMAILIF_QUERYRETURNSRESULTS|select * from query_store.qs_view where query_id = 3589441560 and mean_time > 0.0001 and start_time >= now() - interval '15 minutes'|
 |Queries with cache hit less than x|SENDMAILIF_QUERYRETURNSRESULTS|select * , shared_blks_hit / nullif(shared_blks_hit + shared_blks_read, 0) AS as cache_hit from query_store.qs_view|
 |Queries with a mean execution time that is more than x milliseconds|SENDMAILIF_QUERYRETURNSRESULTS|select * from query_store.qs_view where mean_time > 5000 and start_time >= now() - interval '15 minutes'|
