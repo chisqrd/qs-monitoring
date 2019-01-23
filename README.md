@@ -51,16 +51,15 @@ deployment scenarios are supported, we may revisit this script to accommodate th
 It would help to understand the data collected by [Intelligent Performance feature](https://docs.microsoft.com/en-us/azure/postgresql/concepts-query-store) to figure out what you can alert on. However, you can take advantage of some of the few obvious cases in the
 corresponding app setting of your Azure Function
 
-|Use Case|Your functions app settings|Value|
+|Case|Function app settings|Value|
 |---|---|---|
 |My network latency is more than x milliseconds|SENDMAILIF_QUERYRETURNSRESULTS|select * from query_store.qs_view where query_id = 3589441560 and mean_time > 0.0001 and start_time >= now() - interval '15 minutes'|
-|Queries with cache hit less than x|SENDMAILIF_QUERYRETURNSRESULTS|select * , shared_blks_hit / nullif(shared_blks_hit + shared_blks_read, 0) AS as cache_hit from query_store.qs_view|
+|Queries with cache hit less than x|SENDMAILIF_QUERYRETURNSRESULTS|select * , shared_blks_hit / nullif(shared_blks_hit + shared_blks_read, 0) AS as cache_hit from query_store.qs_view where shared_blks_hit / nullif(shared_blks_hit + shared_blks_read, 0) < 0.9|
 |Queries with a mean execution time that is more than x milliseconds|SENDMAILIF_QUERYRETURNSRESULTS|select * from query_store.qs_view where mean_time > 5000 and start_time >= now() - interval '15 minutes'|
 
 
 ## Current shortcomings
-Please note that this is not a full-fledged alerting solution! 
-*Among the missing capabilities that might end up annoying you is the deduplication process in an incident management solution you'd expect.
+Please note that this is not a full-fledged alerting solution! Among the missing capabilities that might end up annoying you is the deduplication process in an incident management solution you'd expect.
 Choosing your cron interval for the function and choosing a proper lookback period to evaluate your alerting condition will probably help reduce noise level of your monitor until a time we can add such
 a capability here.
 
