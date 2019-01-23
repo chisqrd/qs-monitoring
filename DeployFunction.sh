@@ -29,7 +29,7 @@ az.cmd group deployment create --name $deploymentName --resource-group $resource
 echo "---> Deploying qs monitoring function"
 az.cmd functionapp deployment source config-zip -g $resourceGroupName -n qsmonitoring --src "./zip/Alert.zip"
 
-qsMonitoringAppSettings="MAIL_TO=opiferous@live.com SMTP_SERVER=smtp.office365.com" 
+qsMonitoringAppSettings="MAIL_TO=___@live.com SMTP_SERVER=smtp.office365.com" 
 #cronIntervalSettings="CronTimerInterval=0 */1 * * * *"
 
 az.cmd functionapp config appsettings set --resource-group $resourceGroupName --name qsmonitoring  --settings ${qsMonitoringAppSettings} "CronTimerInterval=0 */1 * * * *" --debug

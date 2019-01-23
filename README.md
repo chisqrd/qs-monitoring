@@ -47,6 +47,12 @@ deployment scenarios are supported, we may revisit this script to accommodate th
 
 ![Query Store Monitoring](https://github.com/chisqrd/qs-monitoring/blob/master/qsmonitoring.png)
 
+## Current shortcomings
+Please note that this is not a full-fledged alerting solution! 
+*Among the missing capabilities that might end up annoying you is the deduplication process in an incident management solution you'd expect.
+Choosing your cron interval for the function and choosing a proper lookback period to evaluate your alerting condition will probably help reduce noise level of your monitor until a time we can add such
+a capability here.
+
 ## Deploying a bare function app
 If you want to do a simple function app deployment on a standard asp, you can also use below custom template but you will need to deploy the function app from your
 solution yourself.

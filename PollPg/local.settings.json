@@ -3,10 +3,10 @@
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
-    "KeyVaultUri": "https://kikv.vault.azure.net/",
-    "MAIL_TO": "opiferous@live.com",
+    "KeyVaultUri": "https://qsmonitoring_kv.vault.azure.net/",
+    "MAIL_TO": "___@live.com",
     "CronTimerInterval": "0 */1 * * * *",
-    "SENDER_ACCOUNT": "dummy_sender@outlook.com",
+    "SENDER_ACCOUNT": "___@outlook.com",
     "SENDER_ACCOUNT_SECRET_NAME": "senderSecret",
     "CONNECTION_STRING_SECRET_NAME": "pgConnectionString",
     "SMTP_SERVER": "smtp.office365.com",

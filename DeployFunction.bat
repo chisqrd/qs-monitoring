@@ -24,9 +24,9 @@ if %var%==false ( echo "---> Creating resource group: " %resourceGroupName% && c
 :: ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 :: +++++++++++++++++++++++++ SET VALUES AS APPROPRIATE ++++++++++++++++++++++++++++++++
 :: ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-set functionAppName=qsmonitoring
-set keyVaultName=kikv14
-set mailTo=opiferous@live.com
+set functionAppName=qsmonitoringfn
+set keyVaultName=qsmonitoringkv
+set mailTo=dummy_sender@outlook.com
 set senderAccount=dummy_sender@outlook.com
 set smtpServer=smtp.office365.com
 
@@ -89,7 +89,7 @@ set deploymentName= %functionAppName%%dateString%%timeString: =0%
 :: call az group deployment create --name %deploymentName% --resource-group %resourceGroupName% --template-file %templateFilePath% --parameters %parameterFilePath% --verbose
 call az group deployment create --name %deploymentName% --resource-group %resourceGroupName% --template-file %templateFilePath% --parameters "{""appName"":{""value"":""%functionAppName%""}}" --verbose
 echo "---> Deploying qs monitoring function"
-call az functionapp deployment source config-zip -g %resourceGroupName% -n %functionAppName% --src "./zip/Alert.zip" --verbose
+call az functionapp deployment source config-zip -g %resourceGroupName% -n %functionAppName% --src "./PollPg/zip/Alert.zip" --verbose
 
 echo "---> Updating configuration settings"
 
