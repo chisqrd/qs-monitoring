@@ -45,7 +45,7 @@ does access the keyvault over internet. If you want to avoid this and access you
 both your function app and your keyvault. Please be aware that vnet support of function apps is in preview and is currently only available in eastus. Once the proper
 deployment scenarios are supported, we may revisit this script to accommodate this. Until then, you will need to configure vnet manually to accomplish below.
 
-![Query Store Monitoring](https://github.com/chisqrd/qs-monitoring/blob/master/qsmonitoring.png)
+![Query Store Monitoring](https://github.com/chisqrd/qs-monitoring/blob/master/assets/qsmonitoring.png)
 
 ## What kind of conditions can I detect?
 It would help to understand the data collected by [Intelligent Performance feature](https://docs.microsoft.com/en-us/azure/postgresql/concepts-query-store) to figure out what you can alert on. However, you can take advantage of some of the few obvious cases in the
