@@ -18,9 +18,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "arm", "arm", "{DB235CDC-A41
 		arm\azuredeploy.parameters.json = arm\azuredeploy.parameters.json
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "zip", "zip", "{61E8EFA5-03BC-4132-B0C6-AF0001BEB04D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{954BF8D2-76A9-471E-B822-15D24FD86919}"
 	ProjectSection(SolutionItems) = preProject
-		zip\Alert.zip = zip\Alert.zip
+		assets\qsmonitoring.png = assets\qsmonitoring.png
+		assets\qsmonitoring_troubleshooting_1.png = assets\qsmonitoring_troubleshooting_1.png
 	EndProjectSection
 EndProject
 Global
@@ -39,7 +40,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{DB235CDC-A413-417D-988A-02D2BEEFCA72} = {EEAB46A0-5639-4F81-AD57-EFAAED169110}
-		{61E8EFA5-03BC-4132-B0C6-AF0001BEB04D} = {EEAB46A0-5639-4F81-AD57-EFAAED169110}
+		{954BF8D2-76A9-471E-B822-15D24FD86919} = {EEAB46A0-5639-4F81-AD57-EFAAED169110}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15F3F322-E915-497E-93C2-E90EF17C5D56}
