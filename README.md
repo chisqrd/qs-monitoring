@@ -2,6 +2,8 @@
 Azure Database for PostgreSQL Query Store records how your queries do over time. This information comes handy when you want to be notified of anomalies 
 such as long running queries or blocked processes. The following example intends give you a starting point for a near real time monitoring and alerting
 mechanism.
+## Prerequisites
+* [Install the Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 ## Getting started
 You can clone this repo and make changes to the function code as you wish or you can just deploy via the scripts provided by making the minimum changes that fits to
 your environment. 
