@@ -11,9 +11,9 @@ your environment.
 1. If you choose to deploy with the scripts provided, you will first need to provide some additional information asked by DeployFunction.ps1 script 
 In addition, you can update your cron interval, if and then queries before running this script where it says 'SET VALUES AS APPROPRIATE' before you run this statement. 
 
-`#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-`#+++++++++++++++++ SET VALUES AS APPROPRIATE ++++++++++++++++++++++++
-`#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++ SET VALUES AS APPROPRIATE ++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 We suggest that you define the following values
 
