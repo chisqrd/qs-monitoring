@@ -36,8 +36,6 @@ We suggest that you define the following values
 ```
 DeployFunction.ps1
 ```
-If you choose to not provide a subscription name, it will use your default subscription. If resource group name you
-provided does not exist, the script will create a resource group for you.
 
 You can access the logs from the logs folder where you can find the url for the function deployment url for further information.
 
