@@ -8,38 +8,38 @@ mechanism.
 You can clone this repo and make changes to the function code as you wish or you can just deploy via the scripts provided by making the minimum changes that fits to
 your environment. 
 
-1. If you choose to deploy with the scripts provided, you will first need to provide some additional information within DeployFunction.bat file 
-where it says 'SET VALUES AS APPROPRIATE' before you run this statement. 
+1. If you choose to deploy with the scripts provided, you will first need to provide some additional information asked by DeployFunction.ps1 script 
+In addition, you can update your cron interval, if and then queries before running this script where it says 'SET VALUES AS APPROPRIATE' before you run this statement. 
 
-:: ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+`#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+`#+++++++++++++++++ SET VALUES AS APPROPRIATE ++++++++++++++++++++++++
+`#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-:: +++++++++++++++++ SET VALUES AS APPROPRIATE ++++++++++++++++++++++++
-
-:: ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-We suggest that you define these values at a minimum here
+We suggest that you define the following values
 
 |Variable|Notes|
 |---|---|
 |functionAppName|create a function app by this name if it does not already exist|
 |keyVaultName|create a keyvault if not exists, else get the uri for the keyvault|
-|mailTo|email adress that the alert will go to|
-|senderAccount|email address that the alert will be sent from|
-|smtpServer|smtp relay to be used|
-|cronIntervalSetting|the frequency to run the alert on. Supports the standard cron syntax, e.g. CronTimerInterval=0 */1 * * * *
-|ifQuerySetting|replace the query after SENDMAILIF_QUERYRETURNSRESULTS= with your own alert condition. If query returns any rows back, monitor will run then queries and send an email alert|
-|thenQueriesSetting|expects a json doc that is in format {""QueryName"":""Query"",""QueryName"":""Query""} after LIST_OF_QUERIESWITHSUPPORTINGDATA=|
+|mailTo|email adress that the alert will go to. Can later be changed from your function's appsettings|
+|senderAccount|email address that the alert will be sent from. Can later be changed from your function's appsettings|
+|smtpServer|smtp relay to be used. Can later be changed from your function's appsettings|
+|databaseConnectionStringValue|you can either provide a temporary value to update it directly in your keyvault if preferred|
+|senderAccountsPasswordValue|you can either provide a temporary value to update it directly in your keyvault if preferred|
+|cronIntervalSetting|the frequency to run the alert on. Supports the standard cron syntax, e.g. CronTimerInterval=0 */1 * * * * Can later be changed from your function's appsettings|
+|ifQuerySetting|replace the query after SENDMAILIF_QUERYRETURNSRESULTS= with your own alert condition. If query returns any rows back, monitor will run then queries and send an email alert. Can later be changed from your function's appsettings|
+|thenQueriesSetting|expects a json doc that is in format {""QueryName"":""Query"",""QueryName"":""Query""} after LIST_OF_QUERIESWITHSUPPORTINGDATA= . Can later be changed from your function's appsettings|
 
 
 2. You will then need to run the following in a command prompt
 
 ```
-DeployFunction.bat <ResourceGroupName> <AzureRegionName> [<SubscriptionGuid>]
+DeployFunction.ps1
 ```
-Though the first two parameters are required, if you choose to not provide a subscription guid, it will use your default subscription. If resource group name you
+If you choose to not provide a subscription name, it will use your default subscription. If resource group name you
 provided does not exist, the script will create a resource group for you.
 
-3. You can choose to provide your secrets to the keyvault within the script or you can just change it later via az cli or portal as you wish.
+You can access the logs from the logs folder where you can find the url for the function deployment url for further information.
 
 ## How secure is this?
 The script provides you with the means to store your secrets in a keyvault. Your secrets are always encrypted in-transit as well as at-rest. However, the function app 
