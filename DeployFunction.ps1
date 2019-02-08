@@ -129,7 +129,7 @@
     #use the following commented line instead of the current assignment if you want to use a json file for the parameters instead. Make sure to change azuredeploy.parameters.json as appropriate
     #$parameters = $parameterFilePath
     $parameters = "{""appName"":{""value"":""$functionAppName""}}"
-    log(az group deployment create --name $deploymentName --resource-group $resourceGroupName --template-file $templateFilePath --parameters $parameters --verbose )
+    az group deployment create --name $deploymentName --resource-group $resourceGroupName --template-file $templateFilePath --parameters $parameters --verbose
     log "---> Deploying monitoring function via deployment $deploymentName" yellow
 
     $functionAppDeployment = az functionapp deployment source config-zip -g $resourceGroupName -n $functionAppName --src "$PSScriptRoot\PollPg\zip\Alert.zip" --verbose | ConvertFrom-Json
