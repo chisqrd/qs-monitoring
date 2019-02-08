@@ -1,11 +1,4 @@
-﻿#script creates an azure function that serves as a monitor for Azure Database for PostgreSQL Query Store
-#sign in to Azure
-#Login-AzureRmAccount
-
-#find out the current selected subscription
-#Get-AzureRmSubscription | Select Name, SubscriptionId
-
-Param(
+﻿Param(
    [Parameter(Mandatory= $true, HelpMessage="Enter resource group name for your monitor")]
    [ValidateNotNullorEmpty()]
    [string] $resourceGroupName,
@@ -27,23 +20,23 @@ Param(
    [Parameter(Mandatory= $true, HelpMessage="Enter the smtp server form the senderAccount that you just entered. An example for a live.com or outlook.com account would be smtp.office365.com")]
    [ValidateNotNullorEmpty()]
    [string] $smtpServer,
-   [Parameter(Mandatory= $false, HelpMessage="Enter subscription name for your monitor")]
+   [Parameter(Mandatory= $true, HelpMessage="Enter subscription name for your monitor")]
    [ValidateNotNullorEmpty()]
    [string] $subscriptionName="YourDefaultSubscriptionName",
-   [Parameter(Mandatory= $false, HelpMessage="Enter the secret name that you will store your database connection string in your keyvault")]
-   [ValidateNotNullorEmpty()]
-   [string] $keyVaultConnectionStringSecretName="pgConnectionString",
-   [Parameter(Mandatory= $false, HelpMessage="Enter the secret name that you will store your sender email account's password in your keyvault")]
-   [ValidateNotNullorEmpty()]
-   [string] $keyVaultSenderAccountSecretName="senderSecret",
    [Parameter(Mandatory= $true, HelpMessage="Enter the full connection string to the database that you are connecting to in order to monitor. This value will be passed to keyvault as SecureString and will be stored encrypted")]
    [ValidateNotNullorEmpty()]
    [string] $databaseConnectionStringValue,
    [Parameter(Mandatory= $true, HelpMessage="Enter the password for the email account that will send the alert emails. This value will be passed to keyvault as SecureString and will be stored encrypted")]
    [ValidateNotNullorEmpty()]
-   [string] $senderAccountsPasswordValue
+   [string] $senderAccountsPasswordValue,
+   [Parameter(Mandatory= $false, HelpMessage="Enter the secret name that you will store your database connection string in your keyvault")]
+   [ValidateNotNullorEmpty()]
+   [string] $keyVaultConnectionStringSecretName="pgConnectionString",
+   [Parameter(Mandatory= $false, HelpMessage="Enter the secret name that you will store your sender email account's password in your keyvault")]
+   [ValidateNotNullorEmpty()]
+   [string] $keyVaultSenderAccountSecretName="senderSecret"
 )
-
+    
     #assign a unique name for deployment
     $stamp = Get-Date -Format yyyyMMddHHmmsss
     $deploymentName= "$functionAppName$stamp"
@@ -67,8 +60,26 @@ Param(
        $logEntry | out-file -Filepath $logFilePath -append
     }
 
-    # select a particular subscription
-    Select-AzureRmSubscription -SubscriptionName $subscriptionName
+    $context = Get-AzureRmContext
+    if($context.Name -eq $null)
+    {
+        Try
+        {
+            Login-AzureRmAccount
+            
+            #find out the current selected subscription
+            #Get-AzureRmSubscription | Select Name, SubscriptionId
+
+            # select a particular subscription
+            Select-AzureRmSubscription -SubscriptionName $subscriptionName
+        }
+        Catch
+        {
+            log "---> Either there is an issue with your login or subscription name provided is invalid. Please try again.\_(ツ)_/" red
+            exit
+        }
+    }
+
 
     #get acceptable locations and validate location parameter
     $locations = Get-AzureRmLocation|Select Location
@@ -82,12 +93,12 @@ Param(
     $rgResource=Get-AzureRmResourceGroup -Name $resourceGroupName -Location $resourceGroupLocation -ErrorVariable rgNotPresent -ErrorAction SilentlyContinue
     if($rgNotPresent)
     {
-        log "ResourceGroup does not exist;creating $resourceGroupName in $resourceGroupLocation region" yellow
+        log "---> ResourceGroup does not exist;creating $resourceGroupName in $resourceGroupLocation region" yellow
         $rgResource=New-AzureRmResourceGroup -Name $resourceGroupName -Location $resourceGroupLocation -ErrorAction Stop
-        log 'ResourceGroup successfully created' green
+        log '---> ResourceGroup successfully created' green
     }
     else
-    {log "$($rgResource.ResourceId) already exists" green}
+    {log "---> $($rgResource.ResourceId) already exists" green}
 
     log "---> Getting the uri for the keyvault specified" yellow
     $kvResource = Get-AzureRmKeyVault -VaultName $keyVaultName -ResourceGroupName $resourceGroupName
@@ -115,10 +126,10 @@ Param(
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
     #deploy function and update the settings
-    #use the following commented line instead of the current assignment if you want to use a json file for the parameters instead
+    #use the following commented line instead of the current assignment if you want to use a json file for the parameters instead. Make sure to change azuredeploy.parameters.json as appropriate
     #$parameters = $parameterFilePath
     $parameters = "{""appName"":{""value"":""$functionAppName""}}"
-    $deployment = az group deployment create --name $deploymentName --resource-group $resourceGroupName --template-file $templateFilePath --parameters $parameters --verbose 
+    log(az group deployment create --name $deploymentName --resource-group $resourceGroupName --template-file $templateFilePath --parameters $parameters --verbose )
     log "---> Deploying monitoring function via deployment $deploymentName" yellow
 
     $functionAppDeployment = az functionapp deployment source config-zip -g $resourceGroupName -n $functionAppName --src "$PSScriptRoot\PollPg\zip\Alert.zip" --verbose | ConvertFrom-Json
