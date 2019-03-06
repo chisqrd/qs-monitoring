@@ -4,6 +4,8 @@ such as long running queries or blocked processes. The following example intends
 mechanism.
 ## Prerequisites
 * [Install the Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
+* [Install AzureRM](https://www.powershellgallery.com/packages/AzureRM.Resources/6.7.3)
+
 ## Getting started
 You can clone this repo and make changes to the function code as you wish or you can just deploy via the scripts provided by making the minimum changes that fits to
 your environment. 
@@ -30,8 +32,10 @@ We suggest that you define the following values
 |ifQuerySetting|replace the query after SENDMAILIF_QUERYRETURNSRESULTS= with your own alert condition. If query returns any rows back, monitor will run then queries and send an email alert. Can later be changed from your function's appsettings|
 |thenQueriesSetting|expects a json doc that is in format {""QueryName"":""Query"",""QueryName"":""Query""} after LIST_OF_QUERIESWITHSUPPORTINGDATA= . Can later be changed from your function's appsettings|
 
+You also need to update your appName value in your azuredeploy.parameters.json to match the functionAppName you will provide to the DeployFunction.ps1 script.
 
-2. You will then need to run the following in a command prompt
+
+2. You will then need to run the following in a command prompt. Please make sure not to run this script from Powershell ISE as it creates complications for $PSScriptRoot value.
 
 ```
 DeployFunction.ps1

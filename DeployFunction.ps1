@@ -36,9 +36,9 @@
    [ValidateNotNullorEmpty()]
    [string] $keyVaultSenderAccountSecretName="senderSecret"
 )
-    
+try{
     #assign a unique name for deployment
-    $stamp = Get-Date -Format yyyyMMddHHmmsss
+    $stamp = Get-Date -Format yyyyMMddHHmmsss -ErrorAction Stop
     $deploymentName= "$functionAppName$stamp"
     $mailToSetting="MAIL_TO=$mailTo"
     $smtpServerSetting="SMTP_SERVER=$smtpServer"
@@ -50,28 +50,26 @@
     $logFilePath = "$PSScriptRoot\logs\$deploymentName.txt"
     $templateFilePath="$PSScriptRoot\arm\azuredeploy.json"
     $parameterFilePath="$PSScriptRoot\arm\azuredeploy.parameters.json"
-
+    $error.Clear()
 
     function log($string, $color)
     {
        $logEntry = "$($(Get-Date).ToString()) :    $string"
        if ($Color -eq $null) {$color = "white"}
-       write-host $logEntry -foregroundcolor $color
-       $logEntry | out-file -Filepath $logFilePath -append
+       Write-Host $logEntry -foregroundcolor $color
+       $logEntry | Out-File -Filepath $logFilePath -append
     }
 
-    $context = Get-AzureRmContext
+    $context = Get-AzureRmContext -ErrorAction Stop
     if($context.Name -eq $null)
     {
         Try
         {
-            Login-AzureRmAccount
+            Login-AzureRmAccount -ErrorAction Stop
             
             #find out the current selected subscription
             #Get-AzureRmSubscription | Select Name, SubscriptionId
 
-            # select a particular subscription
-            Select-AzureRmSubscription -SubscriptionName $subscriptionName
         }
         Catch
         {
@@ -80,9 +78,12 @@
         }
     }
 
+    # select a particular subscription
+    Select-AzureRmSubscription -SubscriptionName $subscriptionName -ErrorAction Stop
+
 
     #get acceptable locations and validate location parameter
-    $locations = Get-AzureRmLocation|Select Location
+    $locations = Get-AzureRmLocation -ErrorAction Stop|Select Location -ErrorAction Stop
     if($locations.Location -notcontains $resourceGroupLocation)
     {
         log "---> Location provided is not a valid location. Please try again.\_(ツ)_/" red
@@ -93,6 +94,7 @@
     $rgResource=Get-AzureRmResourceGroup -Name $resourceGroupName -Location $resourceGroupLocation -ErrorVariable rgNotPresent -ErrorAction SilentlyContinue
     if($rgNotPresent)
     {
+        $error.Clear()
         log "---> ResourceGroup does not exist;creating $resourceGroupName in $resourceGroupLocation region" yellow
         $rgResource=New-AzureRmResourceGroup -Name $resourceGroupName -Location $resourceGroupLocation -ErrorAction Stop
         log '---> ResourceGroup successfully created' green
@@ -100,16 +102,14 @@
     else
     {log "---> $($rgResource.ResourceId) already exists" green}
 
-    log "---> Getting the uri for the keyvault specified" yellow
-    $kvResource = Get-AzureRmKeyVault -VaultName $keyVaultName -ResourceGroupName $resourceGroupName
-    if($kvResource -eq $null)
-    {
-        log "---> Keyvault does not exist. Creating a new keyvault" yellow
-        $kvResource = New-AzureRmKeyVault -VaultName $keyVaultName -ResourceGroupName $resourceGroupName -Location $resourceGroupLocation -ErrorAction Stop
+    log "---> Creating keyvault if not exists to get the uri for the keyvault specified" yellow
+    $kvResource = az keyvault create --name $keyVaultName --resource-group $resourceGroupName | ConvertFrom-Json
+    if($? -eq $false){
+        throw
     }
-    log "---> The keyvault is at $($kvResource.VaultUri)" green
+    log "---> The keyvault is at $($kvResource.properties.vaultUri)" green
     #function app setting that contains your keyvault uri
-    $keyVaultUriSetting="KeyVaultUri=$($kvResource.VaultUri)"
+    $keyVaultUriSetting="KeyVaultUri=$($kvResource.properties.vaultUri)"
 
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #+++++++++++++++++ SET VALUES AS APPROPRIATE ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -121,28 +121,39 @@
     $ifQuerySetting="SENDMAILIF_QUERYRETURNSRESULTS=select * from query_store.qs_view where mean_time > 5000 and start_time >= now() - interval '15 minutes'"
     $thenQueriesSetting="LIST_OF_QUERIESWITHSUPPORTINGDATA={""""LONG_QUERY_PSQL_STRING"""":""""select datname as Database, pid as Process_ID, usename as Username, query,client_hostname,state, now() - query_start as Query_Duration, now() - backend_start as Session_Duration from pg_stat_activity where age(clock_timestamp(),query_start) > interval '5 minutes' and state like 'active' and usename not like 'postgres' order by 1 desc;"""",""""LIST_OF_PROCESSES"""":""""select now()-query_start as Running_Since,pid,client_hostname,client_addr, usename, state, left(query,60) as query_text from pg_stat_activity;""""}"
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    #Note that you can always update these after deployment. If you are #directly updating queries, double quotes '"' can be exist as is
+    #Note that you can always update these after deployment. If you are #directly updating queries, double quotes '"' can exist as is
     #i.e instead of """"LONG_QUERY_PSQL_STRING"""" you can just enter "LONG_QUERY_PSQL_STRING"
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
     #deploy function and update the settings
     #use the following commented line instead of the current assignment if you want to use a json file for the parameters instead. Make sure to change azuredeploy.parameters.json as appropriate
-    #$parameters = $parameterFilePath
-    $parameters = "{""appName"":{""value"":""$functionAppName""}}"
+    $parameters = $parameterFilePath
+    #$parameters = "{""appName"":{""value"":""$functionAppName""}}"
     az group deployment create --name $deploymentName --resource-group $resourceGroupName --template-file $templateFilePath --parameters $parameters --verbose
+    if($? -eq $false){
+        throw
+    }
     log "---> Deploying monitoring function via deployment $deploymentName" yellow
-
+    Write-Host "Script root is $PSScriptRoot"
     $functionAppDeployment = az functionapp deployment source config-zip -g $resourceGroupName -n $functionAppName --src "$PSScriptRoot\PollPg\zip\Alert.zip" --verbose | ConvertFrom-Json
+    if($? -eq $false){
+        throw
+    }
     log "---> Updating configuration settings. You can check the latest deployment status and logs from $($functionAppDeployment.url)" yellow
 
     $functionAppAppSettings = az functionapp config appsettings set --resource-group $resourceGroupName --name $functionAppName  --settings $cronIntervalSetting $ifQuerySetting $thenQueriesSetting $keyVaultUriSetting $mailToSetting $smtpServerSetting $connectionStringSecretNameSetting $senderAccountSecretNameSetting $senderAccountSetting 
-
+    if($? -eq $false){
+        throw
+    }
     log "---> App configuration settings updated" green
 
     log "---> Getting the system assigned identity for the function" yellow
 
     #get principal id of function app. assign option will create if no system assigned identity exists or return existing one
     $functionAppIdentity = az functionapp identity assign --name $functionAppName --resource-group  $resourceGroupName | ConvertFrom-Json
+    if($? -eq $false){
+        throw
+    }
     $principalId = $functionAppIdentity.principalId
     log "---> App identity assigned for principal $principalId" green
 
@@ -151,12 +162,17 @@
     {
         log "---> Polling keyvault $keyVaultName" yellow
         $kvShowResult = az keyvault show --name $keyVaultName
+        if($? -eq $false){
+            throw
+        }
     } while ($kvShowResult -eq $null)
 
     log "---> Keyvault is ready to use" green
     log "---> Adding the system assigned identity for the function to the keyvault to set the appropriate policy" yellow
     $keyVaultPolicyUpdate = az keyvault set-policy --name $keyVaultName --object-id $principalId --secret-permissions get
-
+    if($? -eq $false){
+        throw
+    }
 
     log "---> Setting up the required keyvault secrets" yellow
 
@@ -164,10 +180,20 @@
     #sample connection string to store
     # Server=YourServerName.postgres.database.azure.com;Database=azure_sys;Port=5432;User Id=YourUser@YourServerName;Password=YourPassword;SslMode=Require;       
     $secretUpdateResult = az keyvault secret set --vault-name $keyVaultName --name $keyVaultConnectionstringSecretName --value $databaseConnectionStringValue
+    if($? -eq $false){
+        throw
+    }
     log "---> A new version for $keyVaultConnectionstringSecretName is successfully created" green
 
     $secretUpdateResult = az keyvault secret set --vault-name $keyVaultName --name $keyVaultSenderAccountSecretName --value $senderAccountsPasswordValue
+    if($? -eq $false){
+        throw
+    }
     log "---> A new version for $keyVaultSenderAccountSecretName is successfully created" green
 
     log "---> Script completed. You can go to your function to check or update app settings and validate that monitor is running as expected" green
     log "---> Log is available at $logFilePath"
+}
+catch{
+    log "An error occurred while executing the script: $error" red
+}
