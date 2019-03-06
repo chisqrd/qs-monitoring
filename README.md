@@ -96,6 +96,8 @@ Your connection string is most likely malformed. Please ensure that it is in the
 
 ### I want to change stuff
 You can go to portal and locate your function app. In order to change app settings, locate FunctionAppSettings, click Manage Application Settings and save your settings after your changes
+
+
 |Case|SettingName|  
 |---|---|  
 |Frequency of runs|CronTimerInterval|  
