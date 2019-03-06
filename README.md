@@ -75,7 +75,7 @@ If you are getting an error like
 
 run the following in your command prompt
 
-`az account clear`
+`az account clear`  
 `az login`
 #### Script cannot find a file during execution
 Please ensure that you are not running in Windows Powershell ISE.
@@ -96,13 +96,13 @@ Your connection string is most likely malformed. Please ensure that it is in the
 
 ### I want to change stuff
 You can go to portal and locate your function app. In order to change app settings, locate FunctionAppSettings, click Manage Application Settings and save your settings after your changes
-|Case|SettingName|
-|---|---|
-|Frequency of runs|CronTimerInterval|
-|Who to mail to|MAIL_TO|
-|Alert condition|SENDMAILIF_QUERYRETURNSRESULTS|
+|Case|SettingName|  
+|---|---|  
+|Frequency of runs|CronTimerInterval|  
+|Who to mail to|MAIL_TO|  
+|Alert condition|SENDMAILIF_QUERYRETURNSRESULTS|  
 
-## Deploying a bare function app
+#### I just want to deploy a bare function app
 If you want to do a simple function app deployment on a standard asp, you can also use below custom template but you will need to deploy the function app from your
 solution yourself.
 
@@ -111,7 +111,7 @@ solution yourself.
     <img src="http://armviz.io/visualizebutton.png"/>
 </a>
 
-### References
+## References
 * [How to deploy Azure Functions with zip push](http://www.frankysnotes.com/2018/06/how-to-deploy-your-azure-functions.html)
 * [A bit more about zip-file deployments](https://medium.com/@fboucheros/how-to-deploy-your-azure-functions-faster-and-easily-with-zip-push-23e15d79599a)
 * If you choose to run the bash script, here is [how to set up your bash in windows to run az cli](https://medium.com/azure-developers/the-ultimate-guide-to-setting-up-the-azure-cli-on-windows-adeda6c6b7e1)
