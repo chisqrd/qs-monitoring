@@ -86,7 +86,7 @@ If your function deployment complains about the name mismatch, please ensure wha
 #### WebApp already exists
 FunctionApp names have to be universally unique. You can update the deployment on an existing functionapp, provided that you are using the same resourcegroup.
 
-### How to check if your deployment is working
+### I'd like to check if my function is working
 You can locate the log file of your deployment under the ./logs folder. To check whether or not your function is functioning properly, you can go to Azure portal and search for your
 function app and locate `PingMyDatabase` function or the name you used if you changed the code. The log stream, if all goes well, should periodically get your secrets from keyvault
 and connect to database. If you are seeing errors in the stream refer to this section.
@@ -94,6 +94,13 @@ and connect to database. If you are seeing errors in the stream refer to this se
 Your connection string is most likely malformed. Please ensure that it is in the following format:
 `host=yourdbinstance.postgres.database.azure.com;port=5432;database=azure_sys;username=youruser@yourdbinstance;password=yourpassword;sslmode=Require`
 
+### I want to change stuff
+You can go to portal and locate your function app. In order to change app settings, locate FunctionAppSettings, click Manage Application Settings and save your settings after your changes
+|Case|SettingName|
+|---|---|
+|Frequency of runs|CronTimerInterval|
+|Who to mail to|MAIL_TO|
+|Alert condition|SENDMAILIF_QUERYRETURNSRESULTS|
 
 ## Deploying a bare function app
 If you want to do a simple function app deployment on a standard asp, you can also use below custom template but you will need to deploy the function app from your
