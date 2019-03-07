@@ -121,8 +121,8 @@ try{
     $ifQuerySetting="SENDMAILIF_QUERYRETURNSRESULTS=select * from query_store.qs_view where mean_time > 5000 and start_time >= now() - interval '15 minutes'"
     $thenQueriesSetting="LIST_OF_QUERIESWITHSUPPORTINGDATA={""""LONG_QUERY_PSQL_STRING"""":""""select datname as Database, pid as Process_ID, usename as Username, query,client_hostname,state, now() - query_start as Query_Duration, now() - backend_start as Session_Duration from pg_stat_activity where age(clock_timestamp(),query_start) > interval '5 minutes' and state like 'active' and usename not like 'postgres' order by 1 desc;"""",""""LIST_OF_PROCESSES"""":""""select now()-query_start as Running_Since,pid,client_hostname,client_addr, usename, state, left(query,60) as query_text from pg_stat_activity;""""}"
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    #Note that you can always update these after deployment. If you are #directly updating queries, double quotes '"' can exist as is
-    #i.e instead of """"LONG_QUERY_PSQL_STRING"""" you can just enter "LONG_QUERY_PSQL_STRING"
+    #Note that you can always update these after deployment. If you are directly updating queries in the portal, enter double quotes as is
+    #i.e instead of """"LONG_QUERY_PSQL_STRING"""" , just enter "LONG_QUERY_PSQL_STRING" in Azure portal's function app settings interface
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
     #deploy function and update the settings
