@@ -57,7 +57,7 @@ corresponding app setting of your Azure Function
 
 |Case|Function app settings|Value|
 |---|---|---|
-|My network latency is more than x milliseconds|SENDMAILIF_QUERYRETURNSRESULTS|select * from query_store.qs_view where query_id = 3589441560 and mean_time > 0.0001 and start_time >= now() - interval '15 minutes'|
+|My query 1 executes in more than x milliseconds on average in the last 15 minutes|SENDMAILIF_QUERYRETURNSRESULTS|select * from query_store.qs_view where query_id = 3589441560 and mean_time > 0.0001 and start_time >= now() - interval '15 minutes'|
 |Queries with cache hit less than x|SENDMAILIF_QUERYRETURNSRESULTS|select * , shared_blks_hit / nullif(shared_blks_hit + shared_blks_read, 0) AS as cache_hit from query_store.qs_view where shared_blks_hit / nullif(shared_blks_hit + shared_blks_read, 0) < 0.9|
 |Queries with a mean execution time that is more than x milliseconds|SENDMAILIF_QUERYRETURNSRESULTS|select * from query_store.qs_view where mean_time > 5000 and start_time >= now() - interval '15 minutes'|
 
@@ -85,6 +85,9 @@ If your function deployment complains about the name mismatch, please ensure wha
 
 #### WebApp already exists
 FunctionApp names have to be universally unique. You can update the deployment on an existing functionapp, provided that you are using the same resourcegroup.
+
+#### Keyvault already exists
+Although not required, this script uses the same region same resource group for the keyvault.
 
 ### I'd like to check if my function is working
 You can locate the log file of your deployment under the ./logs folder. To check whether or not your function is functioning properly, you can go to Azure portal and search for your
