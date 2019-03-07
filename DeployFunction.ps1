@@ -126,10 +126,9 @@ try{
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
     #deploy function and update the settings
-    #use the following commented line instead of the current assignment if you want to use a json file for the parameters instead. Make sure to change azuredeploy.parameters.json as appropriate
     $parameters = $parameterFilePath
-    #$parameters = "{""appName"":{""value"":""$functionAppName""}}"
-    az group deployment create --name $deploymentName --resource-group $resourceGroupName --template-file $templateFilePath --parameters $parameters --verbose
+    $parametersOverride = '{\"appName\": {\"value\": \"functionAppName\"}}' -replace "functionAppName",$functionAppName
+    az group deployment create --name $deploymentName --resource-group $resourceGroupName --template-file $templateFilePath --parameters $parameters --parameters $parametersOverride --verbose
     if($? -eq $false){
         throw
     }
